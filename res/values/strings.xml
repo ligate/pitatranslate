@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pita Translate</string>
+    <string name="app_version">0.8</string>
+    <string name="translate">Translate</string>
+    <string name="to">To</string>
+    <string name="from">From</string>
+    <string name="menu_help">Help</string>
+    <string name="menu_about">About</string>
+    <string name="ok">OK</string>
+    <string name="translation_error">There was an error retrieving the translation.</string>
+    <string name="help_msg">Select the languages that you will be translating between in the two selection lists. Translation takes place from the box you lasted edited to the other box. So, to translate from the top language to the bottom, simply type the text to be translated into the top box and press \"Translate\". Likewise, to translate from the bottom language to the top, simply type in the bottom box and press \"Translate\".</string>
+    <string name="clear">Clear</string>
+    <string name="project_url">code.google.com/p/pitatranslate</string>
+    <string name="cache_filename">translation_cache</string>
+</resources>
