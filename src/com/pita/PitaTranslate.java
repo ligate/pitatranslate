@@ -5,9 +5,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -26,7 +24,6 @@ import android.widget.AdapterView.OnItemSelectedListener;
 public class PitaTranslate extends Activity {
 	
 	// Preferences constants for the app.
-	private static final String PREFS_NAME              = "Prefs";
 	private static final String PREFS_TOP_LANG_INDEX    = "topLanguageIndex";
 	private static final String PREFS_BOTTOM_LANG_INDEX = "bottomLanguageIndex";
 	private static final String PREFS_NORMAL_ORDER      = "normalOrder";
@@ -35,8 +32,9 @@ public class PitaTranslate extends Activity {
 	
 	private static final int HELP_ID  = Menu.FIRST;
     private static final int ABOUT_ID = Menu.FIRST + 1;
+    private static final int SETTINGS_ID = Menu.FIRST + 2;
 	
-    private Translator translator_ = new Translator();
+    private Translator translator_;
     
 	private boolean normalOrder_;
 	
@@ -59,12 +57,13 @@ public class PitaTranslate extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        translator_ = new Translator(this);
         translator_.loadState(this);
         
         setContentView(R.layout.main);
 
         // Restore preferences
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences settings = getSharedPreferences(Common.PREFS_NAME, 0);
         int topLanguageIndex = settings.getInt(PREFS_TOP_LANG_INDEX, 0);
         int bottomLanguageIndex = settings.getInt(PREFS_BOTTOM_LANG_INDEX, 0);
         normalOrder_ = settings.getBoolean(PREFS_NORMAL_ORDER, true);
@@ -192,6 +191,8 @@ public class PitaTranslate extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
+        menu.add(0, SETTINGS_ID, 0, R.string.menu_settings).setIcon(
+        		android.R.drawable.ic_menu_edit);
         menu.add(0, HELP_ID, 0, R.string.menu_help).setIcon(
         		android.R.drawable.ic_menu_help);
         menu.add(0, ABOUT_ID, 0,  R.string.menu_about).setIcon(
@@ -219,7 +220,7 @@ public class PitaTranslate extends Activity {
 
     	translator_.saveState(this);
     	
-    	SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+    	SharedPreferences settings = getSharedPreferences(Common.PREFS_NAME, 0);
     	SharedPreferences.Editor editor = settings.edit();
 
     	editor.putInt(

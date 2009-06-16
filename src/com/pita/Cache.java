@@ -127,6 +127,12 @@ public class Cache {
 		trim();
 	}
 	
+	public void setMaxSize(int maxSize)
+	{
+		maxSize_ = maxSize;
+		trim();
+	}
+	
 	/*! Removes elements from the cache until the cache is no larger than
 	 * maxSize_.
 	 */

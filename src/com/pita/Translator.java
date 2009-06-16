@@ -3,7 +3,11 @@ package com.pita;
 import java.io.FileNotFoundException;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 
 import com.google.api.translate.Translate;
 
@@ -17,13 +21,26 @@ import com.google.api.translate.Translate;
 public class Translator {
 	
 	private static final String LOG_TAG = "PitaTranslate.Translator";
+	private static final String PREFS_MAX_CACHE_SIZE = "maxCacheSize";
 	
     private Cache cache_;
 
-    public Translator()
+    public Translator(Context ctxt)
     {
-    	// TODO: This should be a user-configurable setting
-    	cache_ = new Cache(100);
+    	SharedPreferences prefs = ctxt.getSharedPreferences(Common.PREFS_NAME, 0);
+    	
+    	cache_ = new Cache(prefs.getInt(PREFS_MAX_CACHE_SIZE, 100));	
+    	
+    	prefs.registerOnSharedPreferenceChangeListener(
+    			new SharedPreferences.OnSharedPreferenceChangeListener() {
+    				@Override
+    				public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
+    					if (key == PREFS_MAX_CACHE_SIZE)
+    					{
+    						cache_.setMaxSize(sp.getInt(PREFS_MAX_CACHE_SIZE, 100));
+    					}
+    				}
+    			});
     }
     
     public void loadState(Context ctxt) {

@@ -7,6 +7,7 @@ import java.util.Map;
  * to the abbreviations used by the low-level translation systems.
  */
 public class LanguageMap {
+	
 	public static final Map<String, String> langMap = 
 		new HashMap<String, String>() {{
 			put("Arabic",                	"ar");
