@@ -8,6 +8,8 @@ import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import com.google.api.translate.Language;
+
 import android.util.Log;
 
 /*! Cache: A cache of previously performed translations. 
@@ -28,8 +30,8 @@ public class Cache {
 	/*! A single entry in the cache */
 	private class Entry 
 	{
-		Entry(String fl,
-			  String tl,
+		Entry(Language fl,
+			  Language tl,
 			  String from,
 			  String to)
 		{
@@ -39,8 +41,8 @@ public class Cache {
 			to_ = to;
 		}
 		
-		public String fromLang_;
-		public String toLang_;
+		public Language fromLang_;
+		public Language toLang_;
 		public String from_;
 		public String to_;
 	}
@@ -76,8 +78,8 @@ public class Cache {
 	/*! Searches the cache for an entry matching the parameters. Returns
 	 * a SearchResult for the matching Entry if one is found, null otherwise.
 	 */
-	private SearchResult search(String fromLang,
-								String toLang,
+	private SearchResult search(Language fromLang,
+								Language toLang,
 								String from)
 	{
 		Iterator<Entry> itr = cache_.iterator();
@@ -96,11 +98,11 @@ public class Cache {
 	 * \a fromLang to \a toLang. Returns the translation on
 	 * success, null otherwise.
 	 */
-	public String find(String fromLang,
-					   String toLang,
+	public String find(Language fromLang,
+					   Language toLang,
 					   String from)
 	{
-		SearchResult r =  search(fromLang, toLang, from);
+		SearchResult r = search(fromLang, toLang, from);
 		if (r == null) 
 			return null;
 		else 
@@ -113,8 +115,8 @@ public class Cache {
 	 * adding the new translation to the front (this is how the
 	 * removal order is maintained.)
 	 */
-	public void insert(String fromLang,
-					   String toLang,
+	public void insert(Language fromLang,
+					   Language toLang,
 					   String from,
 					   String to) 
 	{
@@ -125,6 +127,11 @@ public class Cache {
 		cache_.addFirst(new Entry(fromLang, toLang, from, to));
 		
 		trim();
+	}
+	
+	public int getMaxSize()
+	{
+		return maxSize_;
 	}
 	
 	public void setMaxSize(int maxSize)

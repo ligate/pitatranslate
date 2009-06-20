@@ -5,10 +5,8 @@ import java.io.FileNotFoundException;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 
+import com.google.api.translate.Language;
 import com.google.api.translate.Translate;
 
 /*! Class for performing translation between languages.
@@ -21,26 +19,22 @@ import com.google.api.translate.Translate;
 public class Translator {
 	
 	private static final String LOG_TAG = "PitaTranslate.Translator";
-	private static final String PREFS_MAX_CACHE_SIZE = "maxCacheSize";
 	
     private Cache cache_;
 
-    public Translator(Context ctxt)
+    public Translator(int maxCacheSize)
     {
-    	SharedPreferences prefs = ctxt.getSharedPreferences(Common.PREFS_NAME, 0);
-    	
-    	cache_ = new Cache(prefs.getInt(PREFS_MAX_CACHE_SIZE, 100));	
-    	
-    	prefs.registerOnSharedPreferenceChangeListener(
-    			new SharedPreferences.OnSharedPreferenceChangeListener() {
-    				@Override
-    				public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
-    					if (key == PREFS_MAX_CACHE_SIZE)
-    					{
-    						cache_.setMaxSize(sp.getInt(PREFS_MAX_CACHE_SIZE, 100));
-    					}
-    				}
-    			});
+    	cache_ = new Cache(maxCacheSize);
+    }
+    
+    public int getMaxCacheSize()
+    {
+    	return cache_.getMaxSize();
+    }
+    
+    public void setMaxCacheSize(int mcs)
+    {
+    	cache_.setMaxSize(mcs);
     }
     
     public void loadState(Context ctxt) {
@@ -72,9 +66,9 @@ public class Translator {
      * language abbreviations (see LanguageMap)
      */
     public String translate(String text,
-			    			String from,
-			    			String to) throws Exception {
-    	if (from.length() == 0)
+			    			Language from,
+			    			Language to) throws Exception {
+    	if (text.length() == 0)
     		return "";
     	
     	// First check the cache
@@ -82,7 +76,9 @@ public class Translator {
     		
     	// If the cache didn't have the answer, ask google
     	if (result == null)
-    		result = Translate.translate(text, from, to);
+    		result = Translate.translate(text,
+    									 from, 
+    									 to);
 
     	// No matter where the translation came from, always put it in the
     	// cache

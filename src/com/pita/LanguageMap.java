@@ -3,60 +3,69 @@ package com.pita;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.api.translate.Language;
+
 /*! Fundamentally, a mapping from human-readable language names
  * to the abbreviations used by the low-level translation systems.
  */
 public class LanguageMap {
 	
-	public static final Map<String, String> langMap = 
-		new HashMap<String, String>() {{
-			put("Arabic",                	"ar");
-	        put("Bulgarian",             	"bg");
-	        put("Catalan",               	"ca");
-	        put("Chinese",               	"zh");
-	        put("Chinese (Simplified)",  	"zh-CN");
-	        put("Chinese (Traditional)", 	"zh-TW");
-	        put("Croatian",              	"hr");
-	        put("Czech",                 	"cs");
-	        put("Danish",                	"da");
-	        put("Dutch",                 	"nl");
-	        put("English",              	"en");
-	        put("Finnish",               	"fi");
-	        put("French",                	"fr");
-	        put("German",                	"de");
-	        put("Greek",                 	"el");
-	        put("Hebrew",                	"iw");
-	        put("Hindi",                 	"hi");
-	        put("Indonesian",            	"id");
-	        put("Italian",               	"it");
-	        put("Japanese",  			 	"ja");
-	        put("Korean", 					"ko");
-	        put("Latvian", 					"lv");
-	        put("Lithuanian", 				"lt");
-	        put("Norwegian", 				"no");
-	        put("Polish", 					"pl");
-	        put("Portugese", 				"pt");
-	        put("Romanian", 				"ro");
-	        put("Russian", 					"ru");
-	        put("Serbian", 					"sr");
-	        put("Slovak", 					"sk");
-	        put("Slovenian", 				"sl");
-	        put("Spanish", 					"es");
-	        put("Swedish", 					"sv");
-	        put("Tagalog",              	"tl");
-	        put("Ukranian", 				"uk");
-	        put("Vietnamese", 				"vi");
+	public static final Map<String, Language> langMap = 
+		new HashMap<String, Language>() {{
+			put("Albanian",                 Language.ALBANIAN);
+			put("Arabic",                	Language.ARABIC);
+	        put("Bulgarian",             	Language.BULGARIAN);
+	        put("Catalan",               	Language.CATALAN);
+	        put("Chinese",               	Language.CHINESE);
+	        put("Chinese (Simplified)",  	Language.CHINESE_SIMPLIFIED);
+	        put("Chinese (Traditional)", 	Language.CHINESE_TRADITIONAL);
+	        put("Croatian",              	Language.CROATIAN);
+	        put("Czech",                 	Language.CZECH);
+	        put("Danish",                	Language.DANISH);
+	        put("Dutch",                 	Language.DUTCH);
+	        put("English",              	Language.ENGLISH);
+	        put("Estonian",                 Language.ESTONIAN);
+	        put("Finnish",               	Language.FINNISH);
+	        put("French",                	Language.FRENCH);
+	        put("Galacian",                 Language.GALACIAN);
+	        put("German",                	Language.GERMAN);
+	        put("Greek",                 	Language.GREEK);
+	        put("Hebrew",                	Language.HEBREW);
+	        put("Hindi",                 	Language.HINDI);
+	        put("Hungarian",                Language.HUNGARIAN);
+	        put("Indonesian",            	Language.INDONESIAN);
+	        put("Italian",               	Language.ITALIAN);
+	        put("Japanese",  			 	Language.JAPANESE);
+	        put("Korean", 					Language.KOREAN);
+	        put("Latvian", 					Language.LATVIAN);
+	        put("Lithuanian", 				Language.LITHUANIAN);
+	        put("Maltese",                  Language.MALTESE);
+	        put("Norwegian", 				Language.NORWEGIAN);
+	        put("Polish", 					Language.POLISH);
+	        put("Portugese", 				Language.PORTUGUESE);
+	        put("Romanian", 				Language.ROMANIAN);
+	        put("Russian", 					Language.RUSSIAN);
+	        put("Serbian", 					Language.SERBIAN);
+	        put("Slovak", 					Language.SLOVAK);
+	        put("Slovenian", 				Language.SLOVENIAN);
+	        put("Spanish", 					Language.SPANISH);
+	        put("Swedish", 					Language.SWEDISH);
+	        put("Tagalog",              	Language.FILIPINO);
+	        put("Thai",                     Language.THAI);
+	        put("Turkish",                  Language.TURKISH);
+	        put("Ukranian", 				Language.UKRANIAN);
+	        put("Vietnamese", 				Language.VIETNAMESE);
 		}};
 		
 		/*! Returns the abbreviation for the languages \a full */
-		public static String abbrev(String full) {
+		public static Language langValue(String full) {
 			return langMap.get(full);
 		}
 		
 		/*! Returns the fullname for the language abbreviation \a abbrev */
 		public static String fullName(String abbrev) {
 			for (String key : langMap.keySet()) {
-				if (langMap.get(key) == abbrev)
+				if (langMap.get(key).toString() == abbrev)
 					return key;
 			}
 			

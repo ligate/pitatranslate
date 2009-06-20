@@ -3,8 +3,11 @@ package com.pita;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.api.translate.Language;
+
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -21,15 +24,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
 
-public class PitaTranslate extends Activity {
-	
-	// Preferences constants for the app.
-	private static final String PREFS_TOP_LANG_INDEX    = "topLanguageIndex";
-	private static final String PREFS_BOTTOM_LANG_INDEX = "bottomLanguageIndex";
-	private static final String PREFS_NORMAL_ORDER      = "normalOrder";
-	private static final String PREFS_TOP_TEXT          = "topText";
-	private static final String PREFS_BOTTOM_TEXT       = "bottomText";
-	
+public class PitaTranslate 
+	extends Activity 
+{
 	private static final int HELP_ID  = Menu.FIRST;
     private static final int ABOUT_ID = Menu.FIRST + 1;
     private static final int SETTINGS_ID = Menu.FIRST + 2;
@@ -56,19 +53,24 @@ public class PitaTranslate extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        translator_ = new Translator(this);
-        translator_.loadState(this);
         
         setContentView(R.layout.main);
 
         // Restore preferences
-        SharedPreferences settings = getSharedPreferences(Common.PREFS_NAME, 0);
-        int topLanguageIndex = settings.getInt(PREFS_TOP_LANG_INDEX, 0);
-        int bottomLanguageIndex = settings.getInt(PREFS_BOTTOM_LANG_INDEX, 0);
-        normalOrder_ = settings.getBoolean(PREFS_NORMAL_ORDER, true);
-        String topText = settings.getString(PREFS_TOP_TEXT,  "");
-        String bottomText = settings.getString(PREFS_BOTTOM_TEXT, "");
+        SharedPreferences settings = getSharedPreferences(Prefs.PREFS_NAME, 0);
+        int topLanguageIndex = settings.getInt(Prefs.TOP_LANG_INDEX, 0);
+        int bottomLanguageIndex = settings.getInt(Prefs.BOTTOM_LANG_INDEX, 0);
+        normalOrder_ = settings.getBoolean(Prefs.NORMAL_ORDER, true);
+        String topText = settings.getString(Prefs.TOP_TEXT,  "");
+        String bottomText = settings.getString(Prefs.BOTTOM_TEXT, "");
+        
+        // initialize the translator
+        translator_ = 
+        	new Translator(
+        			settings.getInt(
+        				Prefs.MAX_CACHE_SIZE,
+        				Prefs.DEFAULT_MAX_CACHE_SIZE));
+        translator_.loadState(this);
         
         // Initialize language selection spinners
         topLangSpinner_ = (Spinner) findViewById(R.id.top_lang);
@@ -203,12 +205,30 @@ public class PitaTranslate extends Activity {
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         switch(item.getItemId()) {
+        
         case HELP_ID:
             HelpDlg.show(this);
             return true;
+        
         case ABOUT_ID:
         	AboutDlg.show(this);
             return true;
+
+        case SETTINGS_ID:
+        	SettingsDialog dlg = new SettingsDialog(this,
+        											translator_.getMaxCacheSize());
+        	dlg.setOnDismissListener(
+        		new DialogInterface.OnDismissListener()
+        		{
+					@Override
+					public void onDismiss(DialogInterface dialog) {
+						SettingsDialog dlg = (SettingsDialog)(dialog);
+						translator_.setMaxCacheSize(dlg.getMaxCacheSize());
+					}
+        		});
+        	dlg.show();
+        	return true;
+        	
         }
        
         return super.onMenuItemSelected(featureId, item);
@@ -220,25 +240,28 @@ public class PitaTranslate extends Activity {
 
     	translator_.saveState(this);
     	
-    	SharedPreferences settings = getSharedPreferences(Common.PREFS_NAME, 0);
+    	SharedPreferences settings = getSharedPreferences(Prefs.PREFS_NAME, 0);
     	SharedPreferences.Editor editor = settings.edit();
 
     	editor.putInt(
-    			PREFS_TOP_LANG_INDEX,
+    			Prefs.TOP_LANG_INDEX,
     			topLangSpinner_.getSelectedItemPosition());
     	editor.putInt(
-    			PREFS_BOTTOM_LANG_INDEX,
+    			Prefs.BOTTOM_LANG_INDEX,
     			bottomLangSpinner_.getSelectedItemPosition());
     	editor.putBoolean(
-    			PREFS_NORMAL_ORDER,
+    			Prefs.NORMAL_ORDER,
     			normalOrder_);
     	editor.putString(
-    			PREFS_TOP_TEXT,
+    			Prefs.TOP_TEXT,
     			topEdit_.getText().toString());
     	editor.putString(
-    			PREFS_BOTTOM_TEXT, 
+    			Prefs.BOTTOM_TEXT, 
     			bottomEdit_.getText().toString());
-    	
+    	editor.putInt(
+    			Prefs.MAX_CACHE_SIZE,
+    			translator_.getMaxCacheSize());
+    
     	editor.commit();
     }
     
@@ -255,11 +278,11 @@ public class PitaTranslate extends Activity {
     	TextView toEdit   = normalOrder_ ? bottomEdit_ : topEdit_;
     	
     	// Determine the language abbreviations for the selected languages.
-    	String fromLang   = LanguageMap.abbrev(
+    	Language fromLang   = LanguageMap.langValue(
     							(normalOrder_ 
     							 ? topLangSpinner_.getSelectedItem() 
     							 : bottomLangSpinner_.getSelectedItem()).toString());
-    	String toLang     = LanguageMap.abbrev(
+    	Language toLang     = LanguageMap.langValue(
     							(normalOrder_ 
     							 ? bottomLangSpinner_.getSelectedItem() 
     							 : topLangSpinner_.getSelectedItem()).toString());
